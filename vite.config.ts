@@ -9,6 +9,8 @@ import { mockDevServerPlugin } from "vite-plugin-mock-dev-server";
 
 import UnoCSS from "unocss/vite";
 import { resolve } from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
 import { name, version, engines, dependencies, devDependencies } from "./package.json";
 
 // 平台的名称、版本、运行所需的 node 版本、依赖、构建时间的类型提示
@@ -17,6 +19,7 @@ const __APP_INFO__ = {
   buildTimestamp: Date.now(),
 };
 
+const __dirname = dirname(fileURLToPath(import.meta.url));
 const pathSrc = resolve(__dirname, "src");
 
 // Vite配置  https://cn.vitejs.dev/config
