@@ -69,13 +69,6 @@
         </div>
       </el-form-item>
 
-      <div class="flex-x-between w-full">
-        <el-checkbox v-model="loginFormData.rememberMe">{{ t("login.rememberMe") }}</el-checkbox>
-        <el-link type="primary" underline="never" @click="toOtherForm('resetPwd')">
-          {{ t("login.forgetPassword") }}
-        </el-link>
-      </div>
-
       <!-- 登录按钮 -->
       <el-form-item>
         <el-button :loading="loading" type="primary" class="w-full" @click="handleLoginSubmit">
@@ -83,36 +76,6 @@
         </el-button>
       </el-form-item>
     </el-form>
-
-    <div flex-center gap-10px>
-      <el-text size="default">{{ t("login.noAccount") }}</el-text>
-      <el-link type="primary" underline="never" @click="toOtherForm('register')">
-        {{ t("login.reg") }}
-      </el-link>
-    </div>
-
-    <!-- 第三方登录 -->
-    <div class="third-party-login">
-      <div class="divider-container">
-        <div class="divider-line"></div>
-        <span class="divider-text">{{ t("login.otherLoginMethods") }}</span>
-        <div class="divider-line"></div>
-      </div>
-      <div class="social-login">
-        <div class="social-login__item">
-          <div class="i-svg:wechat" />
-        </div>
-        <div class="social-login__item">
-          <div class="i-svg:qq" />
-        </div>
-        <div class="social-login__item">
-          <div class="i-svg:github" />
-        </div>
-        <div class="social-login__item">
-          <div class="i-svg:gitee" />
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 <script setup lang="ts">
@@ -121,7 +84,6 @@ import AuthAPI from "@/api/auth";
 import type { LoginRequest } from "@/types/api";
 import router from "@/router";
 import { useUserStore } from "@/store";
-import { AuthStorage } from "@/utils/auth";
 
 const { t } = useI18n();
 const userStore = useUserStore();
@@ -135,14 +97,11 @@ const loading = ref(false);
 const isCapsLock = ref(false);
 // 验证码图片 Base64
 const captchaBase64 = ref();
-// 记住我
-const rememberMe = AuthStorage.getRememberMe();
 const loginFormData = ref<LoginRequest>({
-  username: "admin",
-  password: "123456",
+  username: "",
+  password: "",
   captchaId: "",
   captchaCode: "",
-  rememberMe,
 });
 
 const loginRules = computed(() => {
@@ -225,11 +184,6 @@ function checkCapsLock(event: KeyboardEvent) {
   if (event instanceof KeyboardEvent) {
     isCapsLock.value = event.getModifierState("CapsLock");
   }
-}
-
-const emit = defineEmits(["update:modelValue"]);
-function toOtherForm(type: "register" | "resetPwd") {
-  emit("update:modelValue", type);
 }
 </script>
 

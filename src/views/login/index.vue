@@ -58,9 +58,6 @@
               <el-tag v-if="appConfig.version" size="small" effect="light" round>
                 {{ `v${appConfig.version}` }}
               </el-tag>
-              <el-tag v-if="tenantEnabled" type="success" size="small" effect="light" round>
-                多租户
-              </el-tag>
             </div>
           </div>
         </div>
@@ -68,13 +65,6 @@
         <transition name="fade-slide" mode="out-in">
           <component :is="formComponents[component]" v-model="component" class="auth-panel__form" />
         </transition>
-
-        <footer class="auth-panel__footer">
-          <el-text size="small">
-            Copyright © 2021 - 2025 youlai.tech
-            <a href="http://beian.miit.gov.cn/" target="_blank">皖ICP备00064962号</a>
-          </el-text>
-        </footer>
       </section>
     </div>
   </div>
