@@ -4,6 +4,7 @@ import { ApiCodeEnum } from "@/enums/api";
 import { useUserStoreHook } from "@/store/modules/user";
 import { usePermissionStoreHook } from "@/store/modules/permission";
 import { AuthStorage, redirectToLogin } from "@/utils/auth";
+import { getToken } from "./login";
 
 // 记录已重试的请求，防止无限循环
 const retriedConfigs = new WeakSet<InternalAxiosRequestConfig>();
@@ -19,7 +20,7 @@ const http = axios.create({
 // 请求拦截器
 http.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    const token = AuthStorage.getAccessToken();
+    const token = getToken();
 
     if (config.headers.Authorization === "no-auth") {
       delete config.headers.Authorization;
@@ -42,9 +43,9 @@ http.interceptors.response.use(
       return response;
     }
 
-    const { code, data, msg } = response.data;
+    const { state, data, msg } = response.data;
 
-    if (code === ApiCodeEnum.SUCCESS) {
+    if (state === ApiCodeEnum.SUCCESS) {
       return data;
     }
 
@@ -60,10 +61,10 @@ http.interceptors.response.use(
       return Promise.reject(error);
     }
 
-    const { code, msg } = response.data as ApiResponse;
+    const { state, msg } = response.data as ApiResponse;
 
     // Token 过期：尝试刷新 token 后自动重试一次
-    if (code === ApiCodeEnum.ACCESS_TOKEN_INVALID) {
+    if (state === ApiCodeEnum.ACCESS_TOKEN_INVALID) {
       // 已重试过，直接跳登录
       if (retriedConfigs.has(config)) {
         await redirectToLogin("登录已过期，请重新登录");
@@ -89,13 +90,13 @@ http.interceptors.response.use(
     }
 
     // Refresh token 失效：无法续期，跳转登录
-    if (code === ApiCodeEnum.REFRESH_TOKEN_INVALID) {
+    if (state === ApiCodeEnum.REFRESH_TOKEN_INVALID) {
       await redirectToLogin("登录已过期，请重新登录");
       return Promise.reject(new Error(msg || "Token Invalid"));
     }
 
     // 权限不足：刷新权限快照后提示
-    if (code === ApiCodeEnum.PERMISSION_DENIED) {
+    if (state === ApiCodeEnum.PERMISSION_DENIED) {
       const permissionStore = usePermissionStoreHook();
       await permissionStore.reloadPermissionSnapshotOnce();
       ElMessage.error(msg || "权限不足");

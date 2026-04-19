@@ -6,11 +6,6 @@
           <ThemeSwitch />
         </div>
       </el-tooltip>
-      <el-tooltip :content="t('login.languageToggle')" placement="bottom">
-        <div class="toolbar-item">
-          <LangSelect size="text-20px" />
-        </div>
-      </el-tooltip>
     </div>
 
     <div class="auth-view__wrapper">
@@ -313,7 +308,7 @@ const formComponents = {
   justify-content: flex-start;
   justify-self: end;
   width: min(420px, 100%);
-  min-height: 560px;
+  height: 360px;
   padding: clamp(1.5rem, 3vw, 2rem);
   margin-inline: auto;
   background: rgba(255, 255, 255, 0.95);

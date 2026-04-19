@@ -1,7 +1,8 @@
 import request from "@/utils/request";
+import { setToken, getToken } from "@/utils/login";
 import type { LoginRequest, LoginResponse, CaptchaInfo } from "@/types/api/auth";
 
-const AUTH_BASE_URL = "/api/v1/auth";
+const AUTH_BASE_URL = "/api.php";
 
 const AuthAPI = {
   /** 登录接口*/
@@ -9,19 +10,19 @@ const AuthAPI = {
     const payload: Record<string, any> = {
       username: data.username,
       password: data.password,
-      captchaId: data.captchaId,
-      captchaCode: data.captchaCode,
     };
-
+    setToken(payload); // 将登录信息加密后存储在 cookie 中
     // tenantId is optional — include only when provided (multi-tenant feature)
     if (typeof data.tenantId !== "undefined") {
       payload.tenantId = data.tenantId;
     }
 
     return request<any, LoginResponse>({
-      url: `${AUTH_BASE_URL}/login`,
+      url: `${AUTH_BASE_URL}?login`,
       method: "post",
-      data: payload,
+      data: {
+        login_token: getToken(), // 从 cookie 中获取加密后的登录信息并发送给后端
+      },
     });
   },
 
