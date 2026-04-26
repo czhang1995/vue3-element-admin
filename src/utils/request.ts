@@ -25,7 +25,8 @@ http.interceptors.request.use(
     if (config.headers.Authorization === "no-auth") {
       delete config.headers.Authorization;
     } else if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+      // config.headers.Authorization = `Bearer ${token}`;
+      config.headers.Authorization = token;
     }
 
     return config;

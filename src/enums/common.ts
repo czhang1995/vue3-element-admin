@@ -28,7 +28,7 @@ export enum DialogMode {
  */
 export enum CommonStatus {
   /** 禁用 */
-  DISABLED = 0,
+  DISABLED = 2,
   /** 启用 */
   ENABLED = 1,
 }

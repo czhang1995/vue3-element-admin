@@ -27,21 +27,32 @@ export const constantRoutes: RouteRecordRaw[] = [
     path: "/",
     name: "/",
     component: Layout,
-    redirect: "/dashboard",
+    redirect: "/user",
     children: [
       {
-        path: "dashboard",
-        component: () => import("@/views/dashboard/index.vue"),
-        // 用于 keep-alive 功能，需要与 SFC 中自动推导或显式声明的组件名称一致
-        // 参考文档: https://cn.vuejs.org/guide/built-ins/keep-alive.html#include-exclude
-        name: "Dashboard",
-        meta: {
-          title: "dashboard",
-          icon: "homepage",
-          affix: true,
-          keepAlive: true,
-        },
+        path: "/user",
+        component: () => import("@/views/system/user/index.vue"),
+        meta: { title: "管理员列表", icon: "user" },
       },
+      {
+        path: "profile",
+        name: "Profile",
+        component: () => import("@/views/profile/index.vue"),
+        meta: { title: "个人中心", hidden: true },
+      },
+      // {
+      //   path: "dashboard",
+      //   component: () => import("@/views/dashboard/index.vue"),
+      //   // 用于 keep-alive 功能，需要与 SFC 中自动推导或显式声明的组件名称一致
+      //   // 参考文档: https://cn.vuejs.org/guide/built-ins/keep-alive.html#include-exclude
+      //   name: "Dashboard",
+      //   meta: {
+      //     title: "dashboard",
+      //     icon: "homepage",
+      //     affix: true,
+      //     keepAlive: true,
+      //   },
+      // },
       {
         path: "401",
         component: () => import("@/views/error/401.vue"),
@@ -52,12 +63,12 @@ export const constantRoutes: RouteRecordRaw[] = [
         component: () => import("@/views/error/404.vue"),
         meta: { hidden: true },
       },
-      {
-        path: "profile",
-        name: "Profile",
-        component: () => import("@/views/profile/index.vue"),
-        meta: { title: "个人中心", icon: "user", hidden: true },
-      },
+      // {
+      //   path: "profile",
+      //   name: "Profile",
+      //   component: () => import("@/views/profile/index.vue"),
+      //   meta: { title: "个人中心", icon: "user", hidden: true },
+      // },
       {
         path: "my-notice",
         name: "MyNotice",

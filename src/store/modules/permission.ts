@@ -32,8 +32,9 @@ export const usePermissionStore = defineStore("permission", () => {
   /** 生成动态路由 */
   async function generateRoutes(): Promise<RouteRecordRaw[]> {
     try {
-      const data = await MenuAPI.getRoutes(); // 获取当前登录人的菜单路由
-      const dynamicRoutes = transformRoutes(data);
+      // const data = await MenuAPI.getRoutes(); // 获取当前登录人的菜单路由
+      // const dynamicRoutes = transformRoutes(data);
+      const dynamicRoutes: RouteRecordRaw[] | PromiseLike<RouteRecordRaw[]> = [];
 
       routes.value = [...constantRoutes, ...dynamicRoutes];
       isRouteGenerated.value = true;

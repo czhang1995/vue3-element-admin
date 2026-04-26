@@ -13,7 +13,7 @@ import type {
   OptionItem,
 } from "@/types/api";
 
-const USER_BASE_URL = "/api/v1/users";
+const USER_BASE_URL = "/api.php";
 
 const UserAPI = {
   /**
@@ -23,7 +23,7 @@ const UserAPI = {
    */
   getInfo() {
     return request<any, UserInfo>({
-      url: `${USER_BASE_URL}/me`,
+      url: `${USER_BASE_URL}?getInfo`,
       method: "get",
     });
   },
@@ -35,7 +35,7 @@ const UserAPI = {
    */
   getPage(queryParams: UserQueryParams) {
     return request<any, PageResult<UserItem>>({
-      url: `${USER_BASE_URL}`,
+      url: `${USER_BASE_URL}?getAdminList`,
       method: "get",
       params: queryParams,
     });
@@ -61,7 +61,7 @@ const UserAPI = {
    */
   create(data: UserForm) {
     return request({
-      url: `${USER_BASE_URL}`,
+      url: `${USER_BASE_URL}?createAdmin`,
       method: "post",
       data,
     });
@@ -75,7 +75,7 @@ const UserAPI = {
    */
   update(id: string, data: UserForm) {
     return request({
-      url: `${USER_BASE_URL}/${id}`,
+      url: `${USER_BASE_URL}?updateAdmin`,
       method: "put",
       data,
     });
@@ -102,8 +102,9 @@ const UserAPI = {
    */
   deleteByIds(ids: string) {
     return request({
-      url: `${USER_BASE_URL}/${ids}`,
-      method: "delete",
+      url: `${USER_BASE_URL}?deleteAdmin`,
+      method: "post",
+      data: { ids },
     });
   },
 

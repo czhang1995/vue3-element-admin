@@ -8,6 +8,7 @@ import type { BaseQueryParams } from "./common";
 export interface UserInfo {
   /** 用户ID */
   userId?: string;
+  id?: string;
   /** 用户名 */
   username?: string;
   /** 用户昵称 */

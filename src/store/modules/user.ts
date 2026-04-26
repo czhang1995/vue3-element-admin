@@ -50,7 +50,7 @@ export const useUserStore = defineStore("user", () => {
     if (!data) {
       throw new Error("Verification failed, please Login again.");
     }
-    Object.assign(userInfo.value, data);
+    Object.assign(userInfo.value, { userId: data[0].id }, ...data);
     return data;
   }
 
