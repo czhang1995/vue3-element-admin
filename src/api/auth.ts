@@ -50,8 +50,8 @@ const AuthAPI = {
   /** 退出登录接口 */
   logout() {
     return request({
-      url: `${AUTH_BASE_URL}/logout`,
-      method: "delete",
+      url: `${AUTH_BASE_URL}?logout`,
+      method: "post",
     });
   },
 

@@ -7,6 +7,8 @@ export * from "./common";
 
 // System 模块
 export * from "./user";
+export * from "./supplier";
+export * from "./bidding";
 export * from "./role";
 export * from "./menu";
 export * from "./dept";

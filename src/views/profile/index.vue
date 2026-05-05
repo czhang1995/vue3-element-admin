@@ -2,7 +2,7 @@
   <div class="profile-container">
     <el-row :gutter="20">
       <!-- 左侧个人信息卡片 -->
-      <el-col :span="8">
+      <!-- <el-col :span="8">
         <el-card class="user-card">
           <div class="user-info">
             <div class="avatar-wrapper">
@@ -47,10 +47,8 @@
             </div>
           </div>
         </el-card>
-      </el-col>
-
-      <!-- 右侧信息卡片 -->
-      <el-col :span="16">
+      </el-col> -->
+      <el-col :span="14">
         <el-card class="info-card">
           <template #header>
             <div class="card-header">
@@ -59,15 +57,15 @@
           </template>
           <el-descriptions :column="1" border>
             <el-descriptions-item label="用户名">
-              {{ userProfile.username }}
-              <el-icon v-if="userProfile.gender === 1" class="gender-icon male">
+              {{ userProfile.name }}
+              <!-- <el-icon v-if="userProfile.gender === 1" class="gender-icon male">
                 <Male />
               </el-icon>
               <el-icon v-else class="gender-icon female">
                 <Female />
-              </el-icon>
+              </el-icon> -->
             </el-descriptions-item>
-            <el-descriptions-item label="手机号码">
+            <!-- <el-descriptions-item label="手机号码">
               {{ userProfile.mobile || "未绑定" }}
             </el-descriptions-item>
             <el-descriptions-item label="邮箱">
@@ -78,10 +76,22 @@
             </el-descriptions-item>
             <el-descriptions-item label="创建时间">
               {{ userProfile.createTime }}
+            </el-descriptions-item> -->
+            <el-descriptions-item label="登录时间">
+              {{ userProfile.login_time }}
+            </el-descriptions-item>
+            <el-descriptions-item label="登录IP">
+              {{ userProfile.login_ip }}
+            </el-descriptions-item>
+            <el-descriptions-item label="创建时间">
+              {{ userProfile.create_time }}
             </el-descriptions-item>
           </el-descriptions>
         </el-card>
+      </el-col>
 
+      <!-- 右侧信息卡片 -->
+      <el-col :span="10">
         <el-card class="security-card">
           <template #header>
             <div class="card-header">
@@ -98,7 +108,7 @@
             </el-button>
           </div>
 
-          <div class="security-item">
+          <!-- <div class="security-item">
             <div class="security-info">
               <div class="security-title">手机号</div>
               <div class="security-desc">
@@ -156,7 +166,7 @@
                 绑定
               </el-button>
             </div>
-          </div>
+          </div> -->
         </el-card>
       </el-col>
     </el-row>
@@ -277,12 +287,12 @@ import type {
   UserProfileForm,
 } from "@/types/api";
 
-import { computed, onBeforeUnmount, onMounted, reactive, ref } from "vue";
-import FileAPI from "@/api/file";
+import { /*computed, */ onBeforeUnmount, onMounted, reactive, ref } from "vue";
+//import FileAPI from "@/api/file";
 import { useUserStoreHook } from "@/store";
 import { redirectToLogin } from "@/utils/auth";
 
-import { Camera } from "@element-plus/icons-vue";
+// import { Camera } from "@element-plus/icons-vue";
 
 const userStore = useUserStoreHook();
 
@@ -363,28 +373,28 @@ const emailBindingRules = {
   password: [{ required: true, message: "请输入当前密码", trigger: "blur" }],
 };
 
-function maskMobile(mobile?: string) {
-  if (!mobile) return "";
-  return mobile.replace(/^(\d{3})\d{4}(\d{4})$/, "$1****$2");
-}
+// function maskMobile(mobile?: string) {
+//   if (!mobile) return "";
+//   return mobile.replace(/^(\d{3})\d{4}(\d{4})$/, "$1****$2");
+// }
 
-function maskEmail(email?: string) {
-  if (!email) return "";
-  const [name, domain] = email.split("@");
-  if (!domain) return email;
-  if (name.length <= 2) return `${name[0] || ""}***@${domain}`;
-  return `${name.slice(0, 2)}***@${domain}`;
-}
+// function maskEmail(email?: string) {
+//   if (!email) return "";
+//   const [name, domain] = email.split("@");
+//   if (!domain) return email;
+//   if (name.length <= 2) return `${name[0] || ""}***@${domain}`;
+//   return `${name.slice(0, 2)}***@${domain}`;
+// }
 
-const mobileSecurityDesc = computed(() => {
-  return userProfile.value.mobile
-    ? `已绑定：${maskMobile(userProfile.value.mobile)}`
-    : "未绑定手机号";
-});
+// const mobileSecurityDesc = computed(() => {
+//   return userProfile.value.mobile
+//     ? `已绑定：${maskMobile(userProfile.value.mobile)}`
+//     : "未绑定手机号";
+// });
 
-const emailSecurityDesc = computed(() => {
-  return userProfile.value.email ? `已绑定：${maskEmail(userProfile.value.email)}` : "未绑定邮箱";
-});
+// const emailSecurityDesc = computed(() => {
+//   return userProfile.value.email ? `已绑定：${maskEmail(userProfile.value.email)}` : "未绑定邮箱";
+// });
 
 /**
  * 打开弹窗
@@ -419,45 +429,45 @@ const handleOpenDialog = (type: DialogType) => {
   }
 };
 
-async function handleUnbindMobile() {
-  if (!userProfile.value.mobile) return;
-  try {
-    const result = await ElMessageBox.prompt("请输入当前密码以解绑手机号", "解绑手机号", {
-      type: "warning",
-      confirmButtonText: "确定",
-      cancelButtonText: "取消",
-      inputType: "password",
-      inputPlaceholder: "当前密码",
-      inputValidator: (val) => !!val || "请输入当前密码",
-    });
-    const value = (result as any).value;
-    await UserAPI.unbindMobile({ password: value });
-    ElMessage.success("手机号解绑成功");
-    await loadUserProfile();
-  } catch {
-    // ignore
-  }
-}
+// async function handleUnbindMobile() {
+//   if (!userProfile.value.mobile) return;
+//   try {
+//     const result = await ElMessageBox.prompt("请输入当前密码以解绑手机号", "解绑手机号", {
+//       type: "warning",
+//       confirmButtonText: "确定",
+//       cancelButtonText: "取消",
+//       inputType: "password",
+//       inputPlaceholder: "当前密码",
+//       inputValidator: (val) => !!val || "请输入当前密码",
+//     });
+//     const value = (result as any).value;
+//     await UserAPI.unbindMobile({ password: value });
+//     ElMessage.success("手机号解绑成功");
+//     await loadUserProfile();
+//   } catch {
+//     // ignore
+//   }
+// }
 
-async function handleUnbindEmail() {
-  if (!userProfile.value.email) return;
-  try {
-    const result = await ElMessageBox.prompt("请输入当前密码以解绑邮箱", "解绑邮箱", {
-      type: "warning",
-      confirmButtonText: "确定",
-      cancelButtonText: "取消",
-      inputType: "password",
-      inputPlaceholder: "当前密码",
-      inputValidator: (val) => !!val || "请输入当前密码",
-    });
-    const value = (result as any).value;
-    await UserAPI.unbindEmail({ password: value });
-    ElMessage.success("邮箱解绑成功");
-    await loadUserProfile();
-  } catch {
-    // ignore
-  }
-}
+// async function handleUnbindEmail() {
+//   if (!userProfile.value.email) return;
+//   try {
+//     const result = await ElMessageBox.prompt("请输入当前密码以解绑邮箱", "解绑邮箱", {
+//       type: "warning",
+//       confirmButtonText: "确定",
+//       cancelButtonText: "取消",
+//       inputType: "password",
+//       inputPlaceholder: "当前密码",
+//       inputValidator: (val) => !!val || "请输入当前密码",
+//     });
+//     const value = (result as any).value;
+//     await UserAPI.unbindEmail({ password: value });
+//     ElMessage.success("邮箱解绑成功");
+//     await loadUserProfile();
+//   } catch {
+//     // ignore
+//   }
+// }
 
 /**
  * 发送手机验证码
@@ -577,31 +587,32 @@ const handleCancel = () => {
   }
 };
 
-const fileInput = ref<HTMLInputElement | null>(null);
+//const fileInput = ref<HTMLInputElement | null>(null);
 
-const triggerFileUpload = () => {
-  fileInput.value?.click();
-};
+// const triggerFileUpload = () => {
+//   fileInput.value?.click();
+// };
 
-const handleFileChange = async (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  const file = target.files ? target.files[0] : null;
-  if (file) {
-    // 调用文件上传API
-    const data = await FileAPI.uploadFile(file);
-    // 更新用户信息
-    await UserAPI.updateProfile({
-      avatar: data.url,
-    });
-    // 更新用户头像
-    userStore.userInfo.avatar = data.url;
-  }
-};
+// const handleFileChange = async (event: Event) => {
+//   const target = event.target as HTMLInputElement;
+//   const file = target.files ? target.files[0] : null;
+//   if (file) {
+//     // 调用文件上传API
+//     const data = await FileAPI.uploadFile(file);
+//     // 更新用户信息
+//     await UserAPI.updateProfile({
+//       avatar: data.url,
+//     });
+//     // 更新用户头像
+//     userStore.userInfo.avatar = data.url;
+//   }
+// };
 
 /** 加载用户信息 */
 const loadUserProfile = async () => {
-  const data = await UserAPI.getProfile();
-  userProfile.value = data;
+  // const data = await UserAPI.getProfile();
+  // userProfile.value = data;
+  userProfile.value = userStore.userInfo;
 };
 
 onMounted(async () => {

@@ -68,18 +68,31 @@ const UserAPI = {
   },
 
   /**
+   * 修改用户(启用/停用)
+   *
+   * @param id 用户ID
+   */
+  editUser(id: string) {
+    return request({
+      url: `${USER_BASE_URL}?updateAdmin`,
+      method: "post",
+      data: { id: Number(id) },
+    });
+  },
+
+  /**
    * 修改用户
    *
    * @param id 用户ID
    * @param data 用户表单数据
    */
-  update(id: string, data: UserForm) {
-    return request({
-      url: `${USER_BASE_URL}?updateAdmin`,
-      method: "put",
-      data,
-    });
-  },
+  // update(id: string, data: UserForm) {
+  //   return request({
+  //     url: `${USER_BASE_URL}?updateAdmin`,
+  //     method: "put",
+  //     data,
+  //   });
+  // },
 
   /**
    * 修改用户密码
@@ -169,8 +182,8 @@ const UserAPI = {
   /** 修改个人中心用户密码 */
   changePassword(data: PasswordChangeForm) {
     return request({
-      url: `${USER_BASE_URL}/password`,
-      method: "put",
+      url: `${USER_BASE_URL}?updatePassword`,
+      method: "post",
       data,
     });
   },

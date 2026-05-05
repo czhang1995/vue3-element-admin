@@ -22,23 +22,57 @@ export const constantRoutes: RouteRecordRaw[] = [
     component: () => import("@/views/login/index.vue"),
     meta: { hidden: true },
   },
-
   {
-    path: "/",
-    name: "/",
+    path: "/user",
     component: Layout,
-    redirect: "/user",
     children: [
       {
         path: "/user",
         component: () => import("@/views/system/user/index.vue"),
-        meta: { title: "管理员列表", icon: "user" },
+        meta: { title: "管理员列表", icon: "system" },
       },
+    ],
+  },
+  {
+    path: "/supplier",
+    component: Layout,
+    children: [
+      {
+        path: "/supplier",
+        component: () => import("@/views/system/supplier/index.vue"),
+        meta: { title: "供应商列表", icon: "setting" },
+      },
+    ],
+  },
+  {
+    path: "/bidding",
+    component: Layout,
+    redirect: "/index",
+    meta: { title: "招标管理", icon: "client" },
+    children: [
+      {
+        path: "/index",
+        component: () => import("@/views/system/bidding/index.vue"),
+        meta: { title: "招标商品列表" },
+      },
+      {
+        path: "/log",
+        component: () => import("@/views/system/bidding/log.vue"),
+        meta: { title: "招标记录" },
+      },
+    ],
+  },
+  {
+    path: "/",
+    name: "/",
+    component: Layout,
+    redirect: "/profile",
+    children: [
       {
         path: "profile",
         name: "Profile",
         component: () => import("@/views/profile/index.vue"),
-        meta: { title: "个人中心", hidden: true },
+        meta: { title: "个人中心", hidden: true, affix: true },
       },
       // {
       //   path: "dashboard",

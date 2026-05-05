@@ -1,8 +1,8 @@
-<!-- 用户管理 -->
+<!-- 供应商管理 -->
 <template>
   <div class="app-container">
     <el-row>
-      <!-- 管理员列表 -->
+      <!-- 供应商列表 -->
       <el-col>
         <!-- 搜索区域 -->
         <div class="filter-section">
@@ -10,7 +10,7 @@
             <el-form-item label="关键字" prop="keywords">
               <el-input
                 v-model="queryParams.keywords"
-                placeholder="管理员名称"
+                placeholder="供应商名称/账号"
                 clearable
                 @keyup.enter="handleQuery"
               />
@@ -39,14 +39,6 @@
           <div class="table-section__toolbar">
             <div class="table-section__toolbar--actions">
               <el-button type="success" icon="plus" @click="handleCreateClick">新增</el-button>
-              <!-- <el-button
-                type="danger"
-                icon="delete"
-                :disabled="!hasSelection"
-                @click="handleDelete()"
-              >
-                删除
-              </el-button> -->
             </div>
           </div>
 
@@ -60,7 +52,8 @@
             row-key="id"
           >
             <!-- <el-table-column type="selection" width="50" align="center" /> -->
-            <el-table-column label="用户名" prop="name" />
+            <el-table-column label="供应商名称" prop="name" />
+            <el-table-column label="供应商账号" prop="account" />
             <el-table-column label="状态" align="center" prop="isUse" width="80">
               <template #default="scope">
                 <el-tag
@@ -85,7 +78,7 @@
             <el-table-column label="创建时间" align="center" prop="create_time" width="180" />
             <el-table-column label="操作" fixed="right" width="160">
               <template #default="scope">
-                <!-- <el-button
+                <el-button
                   type="primary"
                   icon="RefreshLeft"
                   size="small"
@@ -93,7 +86,7 @@
                   @click="handleResetPassword(scope.row)"
                 >
                   重置密码
-                </el-button> -->
+                </el-button>
                 <el-button
                   type="primary"
                   icon="edit"
@@ -127,7 +120,7 @@
       </el-col>
     </el-row>
 
-    <!-- 用户表单 -->
+    <!-- 表单 -->
     <el-drawer
       v-model="dialogState.visible"
       :title="dialogState.title"
@@ -136,14 +129,13 @@
       @close="closeDialog"
     >
       <el-form ref="userFormRef" :model="formData" :rules="rules" label-width="80px">
-        <el-form-item label="登录名" prop="username">
-          <el-input
-            v-model="formData.username"
-            :readonly="!!formData.id"
-            placeholder="请输入管理员登录名"
-          />
-          <div v-if="!formData.id" style="font-size: 12px; color: red">
-            新增的管理员密码默认跟用户名一样，修改密码可以管理员登录后自己去个人详情中操作。
+        <el-form-item label="名称" prop="username">
+          <el-input v-model="formData.username" placeholder="请输入供应商名称" />
+        </el-form-item>
+        <el-form-item label="账号" prop="account">
+          <el-input v-model="formData.account" placeholder="请输入供应商登录名" />
+          <div style="font-size: 12px; color: red">
+            新增的供应商密码默认跟账号名一样，修改密码可以登录后自己去个人详情中操作。
           </div>
         </el-form-item>
         <el-form-item label="状态" prop="status">
@@ -172,37 +164,30 @@
 import { computed, onMounted, reactive, ref } from "vue";
 import { useDebounceFn } from "@vueuse/core";
 import { ElMessage, ElMessageBox, type FormInstance, type FormRules } from "element-plus";
-import type { UserForm, UserQueryParams, UserItem } from "@/types/api";
-// import { downloadFile } from "@/utils";
-import UserAPI from "@/api/system/user";
-// import DeptAPI from "@/api/system/dept";
-// import RoleAPI from "@/api/system/role";
-import { useUserStore, useAppStore } from "@/store";
+import type { SupplierForm, SupplierQueryParams, SupplierItem } from "@/types/api";
+import SupplierAPI from "@/api/system/supplier";
+import { useAppStore } from "@/store";
 import { DeviceEnum, DialogMode, CommonStatus } from "@/enums";
-import { useTableSelection } from "@/composables";
-// import UserDeptTree from "./components/UserDeptTree.vue";
-// import UserImportDialog from "./components/UserImportDialog.vue";
 
 defineOptions({
-  name: "User",
+  name: "Supplier",
   inheritAttrs: false,
 });
 
 const appStore = useAppStore();
-const userStore = useUserStore();
 
 // 表单引用
 const queryFormRef = ref<FormInstance>();
 const userFormRef = ref<FormInstance>();
 
 // 查询参数
-const queryParams = reactive<UserQueryParams>({
+const queryParams = reactive<SupplierQueryParams>({
   pageNum: 1,
   pageSize: 10,
 });
 
 // 列表数据
-const userList = ref<UserItem[]>([]);
+const userList = ref<SupplierItem[]>([]);
 const total = ref(0);
 const loading = ref(false);
 const saveLoading = ref(false);
@@ -210,17 +195,17 @@ const saveLoading = ref(false);
 // 弹窗状态
 const dialogState = reactive({
   visible: false,
-  title: "新增管理员",
+  title: "新增供应商",
   mode: DialogMode.CREATE,
 });
 
 // 表单初始数据
-const initialFormData: UserForm = {
+const initialFormData: SupplierForm = {
   status: CommonStatus.ENABLED,
 };
 
 // 表单数据
-const formData = reactive<UserForm>({ ...initialFormData });
+const formData = reactive<SupplierForm>({ ...initialFormData });
 
 // 下拉选项
 // const deptOptions = ref<OptionItem[]>();
@@ -229,39 +214,23 @@ const formData = reactive<UserForm>({ ...initialFormData });
 const drawerSize = computed(() => (appStore.device === DeviceEnum.DESKTOP ? "600px" : "90%"));
 
 const rules: FormRules = {
-  username: [{ required: true, message: "请输入管理员登录名", trigger: "blur" }],
-  // nickname: [{ required: true, message: "请输入用户昵称", trigger: "blur" }],
-  // deptId: [{ required: true, message: "请选择所属部门", trigger: "change" }],
-  // roleIds: [{ required: true, message: "请选择用户角色", trigger: "change" }],
-  // email: [{ type: "email", message: "请输入正确的邮箱地址", trigger: "blur" }],
-  // mobile: [{ pattern: /^1[3-9]\d{9}$/, message: "请输入正确的手机号码", trigger: "blur" }],
+  username: [{ required: true, message: "请输入供应商名称", trigger: "blur" }],
+  account: [{ required: true, message: "请输入供应商账号", trigger: "blur" }],
 };
 
 /**
- * 加载用户列表数据
+ * 加载供应商列表数据
  */
 async function fetchList(): Promise<void> {
   loading.value = true;
   try {
-    const data = await UserAPI.getPage(queryParams);
+    const data = await SupplierAPI.getPage(queryParams);
     userList.value = data.list;
     total.value = data.total ?? 0;
   } finally {
     loading.value = false;
   }
 }
-
-/**
- * 加载表单下拉选项数据
- */
-// async function loadFormOptions(): Promise<void> {
-//   [roleOptions.value, deptOptions.value] = await Promise.all([
-//     RoleAPI.getOptions(),
-//     DeptAPI.getOptions(),
-//   ]);
-// }
-
-const { selectedIds } = useTableSelection<UserItem>();
 
 /**
  * 执行查询（重置页码）
@@ -287,21 +256,23 @@ function handleResetQuery(): void {
 }
 
 /**
- * 重置用户密码
- * @param userId 用户ID
- * @param password 新密码
+ * 重置供应商密码
+ * @param supplierId 供应商ID
  */
-// async function resetPassword(userId: string, password: string): Promise<void> {
-//   await UserAPI.resetPassword(userId, password);
-//   ElMessage.success("密码重置成功");
-// }
+async function resetPassword(supplierId: string): Promise<void> {
+  loading.value = true;
+  await SupplierAPI.resetPassword(supplierId);
+  loading.value = false;
+  ElMessage.success("密码重置成功");
+}
 
 /**
- * 删除用户
- * @param userIds 用户ID列表，多个ID用逗号分隔
+ * 删除供应商
+ * @param supplierIds 供应商ID列表，多个ID用逗号分隔
  */
-async function deleteUsers(userIds: string): Promise<void> {
-  await UserAPI.deleteByIds(userIds);
+async function deleteSuppliers(supplierIds: string): Promise<void> {
+  loading.value = true;
+  await SupplierAPI.deleteByIds(supplierIds);
   ElMessage.success("删除成功");
   handleQuery();
 }
@@ -334,37 +305,9 @@ function resetForm(): void {
  * 重置密码按钮点击事件
  * @param row 用户数据
  */
-// function handleResetPassword(row: UserItem): void {
-//   ElMessageBox.prompt(`请输入用户【${row.username}】的新密码`, "重置密码", {
-//     confirmButtonText: "确定",
-//     cancelButtonText: "取消",
-//     inputPattern: /.{6,}/,
-//     inputErrorMessage: "密码至少需要6位字符",
-//   }).then(
-//     (result: any) => resetPassword(row.id, result.value),
-//     () => {
-//       /* 用户取消 */
-//     }
-//   );
-// }
-
-/**
- * 新增按钮点击事件
- */
-async function handleCreateClick(): Promise<void> {
-  dialogState.title = "新增管理员";
-  dialogState.mode = DialogMode.CREATE;
-  // await loadFormOptions();
-  openDialog();
-}
-
-/**
- * 管理员停用/启用按钮点击事件
- * @param id 用户ID
- */
-async function handleEditClick(id: string, isUse: number): Promise<void> {
+function handleResetPassword(row: SupplierItem): void {
   ElMessageBox.confirm(
-    `确认${isUse === CommonStatus.ENABLED ? "停用" : "启用"}该管理员吗？`,
+    `确认重置供应商【${row.name}】的密码吗？重置后密码将与账号名相同。`,
     "警告",
     {
       confirmButtonText: "确定",
@@ -372,11 +315,43 @@ async function handleEditClick(id: string, isUse: number): Promise<void> {
       type: "warning",
     }
   ).then(
-    () =>
-      UserAPI.editUser(id).then(() => {
+    () => resetPassword(row.id),
+    () => {
+      /* 用户取消 */
+    }
+  );
+}
+
+/**
+ * 新增按钮点击事件
+ */
+async function handleCreateClick(): Promise<void> {
+  dialogState.title = "新增供应商";
+  dialogState.mode = DialogMode.CREATE;
+  openDialog();
+}
+
+/**
+ * 供应商停用/启用按钮点击事件
+ * @param id 用户ID
+ */
+async function handleEditClick(id: string, isUse: number): Promise<void> {
+  ElMessageBox.confirm(
+    `确认${isUse === CommonStatus.ENABLED ? "停用" : "启用"}该供应商吗？`,
+    "警告",
+    {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
+    }
+  ).then(
+    () => {
+      loading.value = true;
+      SupplierAPI.editSupplier(id).then(() => {
         ElMessage.success(`${isUse === CommonStatus.ENABLED ? "停用" : "启用"}成功`);
         handleQuery();
-      }),
+      });
+    },
     () => {
       /* 用户取消 */
     }
@@ -396,11 +371,11 @@ const handleSubmit = useDebounceFn(async () => {
   saveLoading.value = true;
   try {
     if (formData.id) {
-      await UserAPI.update(formData.id, formData);
-      ElMessage.success("修改管理员成功");
+      await SupplierAPI.update(formData.id, formData);
+      ElMessage.success("修改供应商成功");
     } else {
-      await UserAPI.create(formData);
-      ElMessage.success("新增管理员成功");
+      await SupplierAPI.create(formData);
+      ElMessage.success("新增供应商成功");
     }
     closeDialog();
     handleQuery();
@@ -414,31 +389,18 @@ const handleSubmit = useDebounceFn(async () => {
  * @param id 用户ID，不传则删除选中的用户
  */
 function handleDelete(id?: string): void {
-  const userIds = id ?? selectedIds.value.join(",");
-  if (!userIds) {
+  const supplierIds = id;
+  if (!supplierIds) {
     ElMessage.warning("请勾选删除项");
     return;
   }
 
-  // 安全检查：防止删除当前登录用户
-  const currentUserId = userStore.userInfo?.userId;
-  console.log("当前登录用户ID:", currentUserId, userStore.userInfo);
-  if (currentUserId) {
-    const isCurrentUserInList = id
-      ? id === currentUserId
-      : selectedIds.value.some((selectedId) => String(selectedId) === currentUserId);
-    if (isCurrentUserInList) {
-      ElMessage.error("不能删除当前登录用户");
-      return;
-    }
-  }
-
-  ElMessageBox.confirm("确认删除选中的用户吗？", "警告", {
+  ElMessageBox.confirm("确认删除选中的供应商吗？", "警告", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
     type: "warning",
   }).then(
-    () => deleteUsers(userIds),
+    () => deleteSuppliers(supplierIds),
     () => {
       /* 用户取消 */
     }

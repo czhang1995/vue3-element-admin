@@ -3,9 +3,9 @@
     <!-- 桌面端工具项 -->
     <template v-if="isDesktop">
       <!-- 搜索 -->
-      <div class="navbar-actions__item">
+      <!-- <div class="navbar-actions__item">
         <CommandPalette />
-      </div>
+      </div> -->
 
       <!-- 全屏 -->
       <div class="navbar-actions__item">
@@ -18,19 +18,19 @@
       </div>
 
       <!-- 语言选择 -->
-      <div class="navbar-actions__item">
+      <!-- <div class="navbar-actions__item">
         <LangSelect />
-      </div>
+      </div> -->
 
       <!-- 通知 -->
-      <div class="navbar-actions__item">
+      <!-- <div class="navbar-actions__item">
         <NoticeDropdown />
-      </div>
+      </div> -->
 
       <!-- 租户选择（如果启用多租户）-->
-      <div v-if="showTenantSwitcher" class="navbar-actions__item">
+      <!-- <div v-if="showTenantSwitcher" class="navbar-actions__item">
         <TenantSwitcher @change="handleTenantChange" />
-      </div>
+      </div> -->
     </template>
 
     <!-- 用户菜单 -->
@@ -39,12 +39,12 @@
         <div class="user-profile">
           <div style="width: 28px; height: 28px; overflow: hidden; border-radius: 50%">
             <img
-              :src="userStore.userInfo.avatar"
+              src="../../assets/images/yilian.png"
               class="user-profile__avatar"
               style="width: 100%; height: 100%; object-fit: cover; object-position: center"
             />
           </div>
-          <span class="user-profile__name">{{ userStore.userInfo.username }}</span>
+          <span class="user-profile__name">{{ userStore.userInfo.name }}</span>
         </div>
         <template #dropdown>
           <el-dropdown-menu>
@@ -74,19 +74,19 @@ import { DeviceEnum, SidebarColor, ThemeMode, LayoutMode } from "@/enums/setting
 import { useAppStore, useSettingsStore, useUserStore } from "@/store";
 
 // 导入子组件
-import CommandPalette from "@/components/CommandPalette/index.vue";
+//import CommandPalette from "@/components/CommandPalette/index.vue";
 import Fullscreen from "@/components/Fullscreen/index.vue";
 import SizeSelect from "@/components/SizeSelect/index.vue";
-import LangSelect from "@/components/LangSelect/index.vue";
-import NoticeDropdown from "@/components/NoticeDropdown/index.vue";
-import TenantSwitcher from "@/components/TenantSwitcher/index.vue";
-import { useTenantStoreHook } from "@/store/modules/tenant";
+// import LangSelect from "@/components/LangSelect/index.vue";
+// import NoticeDropdown from "@/components/NoticeDropdown/index.vue";
+// import TenantSwitcher from "@/components/TenantSwitcher/index.vue";
+//import { useTenantStoreHook } from "@/store/modules/tenant";
 
 const { t } = useI18n();
 const appStore = useAppStore();
 const settingStore = useSettingsStore();
 const userStore = useUserStore();
-const tenantStore = useTenantStoreHook();
+//const tenantStore = useTenantStoreHook();
 
 const route = useRoute();
 const router = useRouter();
@@ -94,27 +94,27 @@ const router = useRouter();
 // 是否为桌面设备
 const isDesktop = computed(() => appStore.device === DeviceEnum.DESKTOP);
 
-const canSwitchTenant = computed(() => userStore.userInfo?.canSwitchTenant === true);
+//const canSwitchTenant = computed(() => userStore.userInfo?.canSwitchTenant === true);
 
 // 是否显示租户选择
-const showTenantSwitcher = computed(() => {
-  if (!canSwitchTenant.value) {
-    return false;
-  }
-  return tenantStore.tenantList.length > 1;
-});
+// const showTenantSwitcher = computed(() => {
+//   if (!canSwitchTenant.value) {
+//     return false;
+//   }
+//   return tenantStore.tenantList.length > 1;
+// });
 
-function handleTenantChange(tenantId: number) {
-  tenantStore.switchTenant(tenantId).then(
-    () => {
-      ElMessage.success("切换租户成功");
-      window.location.href = "/";
-    },
-    (error: any) => {
-      ElMessage.error(error.message || "切换租户失败");
-    }
-  );
-}
+// function handleTenantChange(tenantId: number) {
+//   tenantStore.switchTenant(tenantId).then(
+//     () => {
+//       ElMessage.success("切换租户成功");
+//       window.location.href = "/";
+//     },
+//     (error: any) => {
+//       ElMessage.error(error.message || "切换租户失败");
+//     }
+//   );
+// }
 
 /**
  * 打开个人中心页面
